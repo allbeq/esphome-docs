@@ -30,6 +30,7 @@ Configuration variables:
 
 - **update_interval** (*Optional*, :ref:`config-time`): Delay between data requests.
 - **address** (*Optional*, int): Address to use, defaults to ``0x80``.
+- **id** (*Optional*, int): Manually specify the ID for this Hub. Use this if you want to use multiple hubs at once.
 
 Sensor
 ------
@@ -299,6 +300,49 @@ Also you can add select to change battery level
                                               data: [0xA5, 0x40, 0x21, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0E]
                                           - logger.log:
                                               format: "Send cmd to Daly: Set SOC to 0%"
+
+
+Multiple DalyBMS:
+************************
+
+With ESPHome use can connect multiple Daly BMS. Sensor configuration need additional required attribute **bms_daly_id**
+
+.. code-block:: yaml
+
+uart:
+  - id: uart_bms1
+    tx_pin: GPIO1
+    rx_pin: GPIO3
+    baud_rate: 9600
+    rx_buffer_size: 512
+
+
+  - id: uart_bms2
+    tx_pin: GPIO17
+    rx_pin: GPIO5
+    baud_rate: 9600
+    rx_buffer_size: 512
+
+daly_bms:
+  - id: daly1
+    uart_id: uart_bms1
+    update_interval: 10s
+
+  - id: daly2
+    uart_id: uart_bms2
+    update_interval: 10s
+
+sensor:
+  - platform: daly_bms
+    bms_daly_id: daly1
+    voltage:
+      name: "Battery Voltage"
+
+
+  - platform: daly_bms
+    bms_daly_id: daly2
+    voltage:
+      name: "Battery Voltage2"
 
 
 UART Connection
